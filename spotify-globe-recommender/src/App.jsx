@@ -6,7 +6,7 @@ function App() {
   const [token, setToken] = useState(null)
 
   const CLIENT_ID = 'de6c91bc55bb4564ae8275f4ed535e8d'
-  const REDIRECT_URI = 'http://localhost:5173'
+  const REDIRECT_URI = "https://spotify-globe-reccomender.vercel.app/";
   const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize'
   const RESPONSE_TYPE = 'token'
   const SCOPES = [
