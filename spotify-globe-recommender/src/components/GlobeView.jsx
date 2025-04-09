@@ -10,12 +10,19 @@ const GlobeView = ({ onCountrySelect }) => {
       .polygonCapColor(() => 'rgba(0, 150, 255, 0.2)')
       .polygonStrokeColor(() => '#0077ff')
       .polygonAltitude(0.01)
+
       .pointOfView({ lat: 0, lng: 0, altitude: 2.2 }, 0)
+      .polygonLabel((polygon) => `
+        <div style="pointer-events: none; padding: 4px 8px;">
+          <strong>${polygon.properties.name}</strong>
+        </div>
+      `)
       .onPolygonClick((polygon) => {
-        const country = polygon.properties.ADMIN
-        const code = polygon.properties.ISO_A2
+        const country = polygon.properties.name
+        const code = polygon.id // or fallback to 'XX' if needed
         onCountrySelect?.({ name: country, code })
-      });
+      })
+
 
       globe.scene().scale.set(0.85, 0.85, 0.85)
 
@@ -37,10 +44,12 @@ const GlobeView = ({ onCountrySelect }) => {
     fetch('/data/countries.geojson')
       .then(res => res.json())
       .then(countries => {
+        console.log('GeoJSON:', countries)
         globe.polygonsData(
           countries.features.filter(d => d.properties.ISO_A2 !== 'AQ')
-        )
-      })
+        );
+      });
+
 
     return () => {
       window.removeEventListener('resize', resize)
