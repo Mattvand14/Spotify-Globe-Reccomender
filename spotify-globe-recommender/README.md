@@ -1,12 +1,31 @@
-# React + Vite
+# 🌍 Spotify Globe Recommender 🎵
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A global music recommendation web app that uses the Spotify API to recommend tracks from different countries based on your audio preferences — visualized on a 3D interactive globe!
 
-Currently, two official plugins are available:
+![Spotify Globe Recommender Screenshot](public/screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🌐 Interactive 3D globe to explore music by country
+- 🎛️ Customize recommendations using audio features (energy, danceability, etc.)
+- 📡 Real-time Spotify API integration
+- 📈 Visual feedback of global listening trends (optional)
+
+---
+
+## 🚀 Tech Stack
+
+- **Frontend**: React, Three.js, Globe.gl, Tailwind CSS
+- **API**: Spotify Web API
+- **Tools**: Axios, Query-string
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Mattvand14/spotify-globe-recommender.git
+cd spotify-globe-recommender
