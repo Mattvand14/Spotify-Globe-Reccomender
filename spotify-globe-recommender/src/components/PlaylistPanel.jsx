@@ -55,34 +55,25 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
           </a>
 
           <h3 className="mt-4 font-semibold">Tracks:</h3>
-          <ul className="text-sm mt-2 space-y-2">
-            {playlist.tracks?.items?.slice(0, 10).map((item, idx) => {
-              const track = item.track
-              return (
-                <li
-                  key={idx}
-                  onClick={() => handleTrackClick(track)}
-                  className={`cursor-pointer p-2 rounded transition hover:bg-[#333] ${
-                    currentTrack === track.id ? 'bg-[#444]' : ''
-                  }`}
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium">{track.name}</span>
-                    <span className="text-xs text-gray-400">
-                      {track.artists.map((a) => a.name).join(', ')}
-                    </span>
-                    {track.preview_url ? (
-                      <span className="text-xs text-green-400 mt-1">
-                        {currentTrack === track.id ? 'Playing...' : '▶ Click to play preview'}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-red-400 mt-1">No preview available</span>
-                    )}
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+            <ul className="text-sm mt-2 space-y-4">
+              {playlist.tracks?.items?.slice(0, 10).map((item, idx) => {
+                const track = item.track
+                return (
+                  <li key={idx}>
+                    <p className="mb-1 font-medium">{track.name} – <span className="text-gray-400 text-sm">{track.artists.map(a => a.name).join(', ')}</span></p>
+                    <iframe
+                      src={`https://open.spotify.com/embed/track/${track.id}`}
+                      width="100%"
+                      height="80"
+                      frameBorder="0"
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                      className="rounded-lg"
+                    ></iframe>
+                  </li>
+                )
+              })}
+            </ul>
         </>
       ) : (
         <p className="text-sm text-gray-400">No playlist found for this country.</p>
