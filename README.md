@@ -10,7 +10,6 @@ A global music recommendation web app that uses the Spotify API to recommend tra
 - 🎛️ Customize recommendations using audio features (energy, danceability, etc.)
 - 📡 Real-time Spotify API integration
 - 📈 Visual feedback of global listening trends (optional)
-- 🔊 One-click playlist creation
 
 ---
 

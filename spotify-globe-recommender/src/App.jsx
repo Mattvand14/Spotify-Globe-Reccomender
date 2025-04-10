@@ -53,49 +53,72 @@ function App() {
   }, [])
 
   const handleCountryClick = async ({ name, code }) => {
-    const iso3 = code.split(':')[0]
-    const iso2 = iso3to2[iso3]
-
-    setSelectedCountry(name)
-    setSelectedISO2(iso2)
-
-    console.log('Country clicked:', code)
-
-
-    if (!token) return
-
-    console.log('iso3:', iso3)
-    console.log('iso2:', iso2)
-
-
+    const iso3 = code.length === 3 ? code : code.split(':')[0];
+    const iso2 = iso3to2[iso3];
+  
+    setSelectedCountry(name);
+    setSelectedISO2(iso2);
+  
+    if (!token || !name) return;
+  
     try {
-      const res = await fetch(
-        `https://api.spotify.com/v1/browse/featured-playlists?country=${iso2}`,
+      // Step 1: Search for playlists using country name
+      const searchRes = await fetch(
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=playlist&limit=10`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      const data = await res.json()
-      const featured = data.playlists?.items?.[0]
-      if (!featured) return
-
-      const detailsRes = await fetch(
-        `https://api.spotify.com/v1/playlists/${featured.id}?market=${iso2}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      const playlistDetails = await detailsRes.json()
-      setPlaylist(playlistDetails)
+      );
+  
+      const data = await searchRes.json();
+      const playlists = data.playlists?.items ?? [];
+  
+      if (playlists.length === 0) {
+        console.warn(`No playlists found for: ${name}`);
+        setPlaylist(null);
+        return;
+      }
+  
+      // Step 2: Filter user-created playlists (exclude Spotify-owned)
+      const userPlaylists = playlists.filter(
+        pl => pl && pl.owner && pl.owner.id !== 'spotify'
+      );
+  
+      if (userPlaylists.length === 0) {
+        console.warn(`No user-created playlists found for: ${name}`);
+        setPlaylist(null);
+        return;
+      }
+  
+      // Step 3: Fetch full details for each user playlist
+      const detailedPlaylists = await Promise.all(
+        userPlaylists.map(pl =>
+          fetch(`https://api.spotify.com/v1/playlists/${pl.id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then(res => res.json())
+        )
+      );
+  
+      // Step 4: Sort by follower count (descending)
+      const sortedByFollowers = detailedPlaylists.sort(
+        (a, b) => (b.followers?.total || 0) - (a.followers?.total || 0)
+      );
+  
+      // Step 5: Set the most followed playlist
+      setPlaylist(sortedByFollowers[0]);
     } catch (err) {
-      console.error('Error fetching playlist:', err)
-      setPlaylist(null)
+      console.error(`Error fetching user playlists for "${name}":`, err);
+      setPlaylist(null);
     }
-  }
+  };
+  
+  
+  
+  
 
   return (
     <div className="app-container relative min-h-screen bg-[#242424] text-white font-sans px-4">
@@ -119,7 +142,7 @@ function App() {
             Logout
           </button>
 
-          <p className="text-center mt-4">Click a country to see its featured Spotify playlist 🌐🎶</p>
+          <p className="text-center mt-4">Click a country to find Spotify playlists related to it 🌐🎶</p>
 
           <div className="flex flex-col sm:flex-row h-[calc(100vh-150px)]">
           {selectedCountry && selectedISO2 && (
@@ -136,3 +159,5 @@ function App() {
 }
 
 export default App
+
+
