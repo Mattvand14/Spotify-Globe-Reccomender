@@ -23,9 +23,8 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
   }
 
   return (
-    <div className="w-full sm:w-[300px] p-4 bg-[#1e1e1e] text-white overflow-y-auto h-full shadow-xl">
-      {/* Flag and country title */}
-      <div className="flex items-center mb-4">
+    <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-xl overflow-y-auto h-full">
+      <div className="flex justify-center items-center mb-4">
         {countryCode && (
           <img
             src={`https://flagcdn.com/w80/${countryCode.toLowerCase()}.png`}
@@ -36,7 +35,7 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
         <h2 className="text-xl font-bold">{country}</h2>
       </div>
 
-      {/* Playlist display */}
+
       {playlist ? (
         <>
           <a
@@ -48,19 +47,18 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
             <img
               src={playlist.images[0]?.url}
               alt={playlist.name}
-              className="rounded-lg w-full mb-2"
-            />
+              className="rounded-lg w-1/2 h-1/2 mb-2 mx-auto"
+              />
             <p className="text-lg font-semibold">{playlist.name}</p>
             <p className="text-sm text-gray-300">{playlist.description}</p>
           </a>
 
           <h3 className="mt-4 font-semibold">Tracks:</h3>
-            <ul className="text-sm mt-2 space-y-4">
+          <ul className="text-sm mt-2 space-y-4">
             {playlist.tracks?.items?.length > 0 ? (
               playlist.tracks.items.slice(0, 10).map((item, idx) => {
-                const track = item.track
-                if (!track) return null // skip null/undefined tracks
-              
+                const track = item.track;
+                if (!track) return null;
                 return (
                   <li key={idx}>
                     <p className="mb-1 font-medium">{track.name}</p>
@@ -74,19 +72,18 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
                       className="rounded-lg"
                     ></iframe>
                   </li>
-                )
-              })              
+                );
+              })
             ) : (
               <p className="text-sm text-red-400">No track data available for this playlist.</p>
             )}
-
-            </ul>
+          </ul>
         </>
       ) : (
         <p className="text-sm text-gray-400">No playlist found for this country.</p>
       )}
     </div>
-  )
-}
+  );
+};
 
 export default PlaylistPanel

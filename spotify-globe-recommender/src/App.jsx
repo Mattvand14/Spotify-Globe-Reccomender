@@ -4,6 +4,7 @@ import PlaylistPanel from './components/PlaylistPanel'
 import { iso3to2 } from './utils/countryCodeMap'
 import CityGlobeView from './components/CityGlobeView'
 import './App.css'
+import NavBar from './components/NavBar';
 
 function App() {
   const [token, setToken] = useState(null)
@@ -189,45 +190,63 @@ function App() {
     }
   }
 
-
-
   return (
-    <div className="app-container relative min-h-screen bg-[#242424] text-white font-sans px-4">
-      <h1 className="text-4xl font-bold text-center pt-8">🌍 Spotify Globe Recommender 🎵</h1>
+    <div className="app-container min-h-screen bg-[#242424] text-white font-sans">
+      {/* NavBar is fixed at the top */}
+      <NavBar token={token} logout={logout} />
 
-      {!token ? (
-        <div className="flex justify-center items-center h-[80vh]">
-          <button
-            onClick={login}
-            className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition duration-200"
-          >
-            Login with Spotify
-          </button>
-        </div>
-      ) : (
-        <div className="w-full h-full">
-          <button
-            onClick={logout}
-            className="absolute top-4 right-4 z-10 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded shadow transition"
-          >
-            Logout
-          </button>
-
-          <p className="text-center mt-4">Click a country to find Spotify playlists related to it 🌐🎶</p>
-
-          <div className="flex flex-col sm:flex-row h-[calc(100vh-150px)]">
-          {selectedCountry && selectedISO2 && (
-            <PlaylistPanel country={selectedCountry} countryCode={selectedISO2} playlist={playlist} />
-          )}
-            <div className="flex-1">
-              <GlobeView onCountrySelect={handleCountryClick} />
-              {/* <CityGlobeView onCitySelect={handleCityClick} /> */}
+      {/* Main content container overriding global centering */}
+      <main className="w-full pt-20" style={{ display: 'block' }}>
+        {!token ? (
+          <div className="flex justify-center items-center h-[80vh]">
+            <button
+              onClick={login}
+              className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition duration-200"
+            >
+              Login with Spotify
+            </button>
+          </div>
+        ) : (
+          // Use a grid layout for independent positioning:
+          <div className="pr-2">
+            <div className="grid grid-cols-4 gap-4">
+              {/* Left column: PlaylistPanel (25% width) */}
+              <div className="col-span-1.5">
+                {/* Replace the PlaylistPanel container in your App.jsx with: */}
+                {selectedCountry && selectedISO2 && (
+                <div
+                  className="fixed left-0 p-4 z-50 overflow-y-auto"
+                  style={{
+                    top: '80px',              // positions it just below the NavBar
+                    height: 'calc(100vh - 80px)', // sets the container height to full viewport minus navbar height
+                    width: '25%'              // adjust as needed
+                  }}
+                >
+                  <PlaylistPanel
+                    country={selectedCountry}
+                    countryCode={selectedISO2}
+                    playlist={playlist}
+                  />
+                </div>
+              )}
+              </div>
+              {/* Right column: GlobeView (75% width) */}
+              <div className="col-span-4">
+                <p className="text-center mt-1">
+                  Click a country to find Spotify playlists related to it 🌐🎶
+                </p>
+                <div className="flex justify-center items-center h-[calc(100vh-150px)]">
+                  <div className="w-full max-w-3xl">
+                    <GlobeView onCountrySelect={handleCountryClick} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </main>
     </div>
-  )
+  );
 }
 
 export default App
