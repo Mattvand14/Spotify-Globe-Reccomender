@@ -62,10 +62,23 @@ function App() {
   
     if (!token || !name) return;
   
+    // For Chad, immediately clear the playlist
+    if (name.toLowerCase() === 'chad') {
+      console.warn(`No playlist found for ${name}`);
+      setPlaylist(null);
+      return;
+    }
+  
+    // For Georgia, modify the search query to "georgian"
+    let searchQuery = name;
+    if (name.toLowerCase() === 'georgia') {
+      searchQuery = 'georgian';
+    }
+  
     try {
-      // Step 1: Search for playlists using country name
+      // Step 1: Search for playlists using the (possibly modified) query
       const searchRes = await fetch(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=playlist&limit=10`,
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery)}&type=playlist&limit=10`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,23 +90,33 @@ function App() {
       const playlists = data.playlists?.items ?? [];
   
       if (playlists.length === 0) {
-        console.warn(`No playlists found for: ${name}`);
+        console.warn(`No playlists found for: ${searchQuery}`);
         setPlaylist(null);
         return;
       }
   
-      // Step 2: Filter user-created playlists (exclude Spotify-owned)
+      // Define unwanted keywords (case-insensitive) for generic filtering
+      const unwantedKeywords = /tour|setlist|live|concert/i;
+  
+      // Step 2: Filter out unwanted playlists:
+      // - Spotify-owned playlists
+      // - Playlists with unwanted keywords in the name or description
       const userPlaylists = playlists.filter(
-        pl => pl && pl.owner && pl.owner.id !== 'spotify'
+        pl =>
+          pl &&
+          pl.owner &&
+          pl.owner.id !== 'spotify' &&
+          !unwantedKeywords.test(pl.name) &&
+          !(pl.description && unwantedKeywords.test(pl.description))
       );
   
       if (userPlaylists.length === 0) {
-        console.warn(`No user-created playlists found for: ${name}`);
+        console.warn(`No user-created playlists found for: ${searchQuery} after filtering unwanted playlists`);
         setPlaylist(null);
         return;
       }
   
-      // Step 3: Fetch full details for each user playlist
+      // Step 3: Fetch full details for each filtered playlist
       const detailedPlaylists = await Promise.all(
         userPlaylists.map(pl =>
           fetch(`https://api.spotify.com/v1/playlists/${pl.id}`, {
@@ -104,19 +127,21 @@ function App() {
         )
       );
   
-      // Step 4: Sort by follower count (descending)
+      // Step 4: Sort playlists by follower count (descending)
       const sortedByFollowers = detailedPlaylists.sort(
         (a, b) => (b.followers?.total || 0) - (a.followers?.total || 0)
       );
   
-      // Step 5: Set the most followed playlist
-      setPlaylist(sortedByFollowers[0]);
+      // Step 5: Select one playlist at random from the top 10 for variety
+      const topPlaylists = sortedByFollowers.slice(0, 5);
+      const randomIndex = Math.floor(Math.random() * topPlaylists.length);
+      setPlaylist(topPlaylists[randomIndex]);
     } catch (err) {
       console.error(`Error fetching user playlists for "${name}":`, err);
       setPlaylist(null);
     }
   };
-
+  
   const handleCityClick = async ({ name, country }) => {
     console.log(`City selected: ${name}, ${country}`)
   
@@ -165,7 +190,7 @@ function App() {
   }
 
 
-  
+
   return (
     <div className="app-container relative min-h-screen bg-[#242424] text-white font-sans px-4">
       <h1 className="text-4xl font-bold text-center pt-8">🌍 Spotify Globe Recommender 🎵</h1>
@@ -195,8 +220,8 @@ function App() {
             <PlaylistPanel country={selectedCountry} countryCode={selectedISO2} playlist={playlist} />
           )}
             <div className="flex-1">
-              {/* <GlobeView onCountrySelect={handleCountryClick} /> */}
-              <CityGlobeView onCitySelect={handleCityClick} />
+              <GlobeView onCountrySelect={handleCountryClick} />
+              {/* <CityGlobeView onCitySelect={handleCityClick} /> */}
             </div>
           </div>
         </div>

@@ -56,11 +56,14 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
 
           <h3 className="mt-4 font-semibold">Tracks:</h3>
             <ul className="text-sm mt-2 space-y-4">
-              {playlist.tracks?.items?.slice(0, 10).map((item, idx) => {
+            {playlist.tracks?.items?.length > 0 ? (
+              playlist.tracks.items.slice(0, 10).map((item, idx) => {
                 const track = item.track
+                if (!track) return null // skip null/undefined tracks
+              
                 return (
                   <li key={idx}>
-                    <p className="mb-1 font-medium">{track.name} – <span className="text-gray-400 text-sm">{track.artists.map(a => a.name).join(', ')}</span></p>
+                    <p className="mb-1 font-medium">{track.name}</p>
                     <iframe
                       src={`https://open.spotify.com/embed/track/${track.id}`}
                       width="100%"
@@ -72,7 +75,11 @@ const PlaylistPanel = ({ country, countryCode, playlist }) => {
                     ></iframe>
                   </li>
                 )
-              })}
+              })              
+            ) : (
+              <p className="text-sm text-red-400">No track data available for this playlist.</p>
+            )}
+
             </ul>
         </>
       ) : (
