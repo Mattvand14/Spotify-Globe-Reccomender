@@ -2,7 +2,7 @@
 
 A global music recommendation web app that uses the Spotify API to recommend tracks from different countries based on your audio preferences — visualized on a 3D interactive globe!
 
-![Spotify Globe Recommender Screenshot](pubilc\screenshot.png)
+![Spotify Globe Recommender Screenshot](pubilc/screenshot.png)
 
 ---
 
