@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import GlobeView from './components/GlobeView'
 import PlaylistPanel from './components/PlaylistPanel'
 import { iso3to2 } from './utils/countryCodeMap'
+import CityGlobeView from './components/CityGlobeView'
 import './App.css'
 
 function App() {
@@ -115,11 +116,56 @@ function App() {
       setPlaylist(null);
     }
   };
-  
-  
-  
-  
 
+  const handleCityClick = async ({ name, country }) => {
+    console.log(`City selected: ${name}, ${country}`)
+  
+    if (!token) return
+  
+    try {
+      const res = await fetch(
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=playlist&limit=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+  
+      const data = await res.json()
+      const playlists = data.playlists?.items ?? []
+  
+      if (playlists.length === 0) {
+        setPlaylist(null)
+        return
+      }
+  
+      // Optional: filter out Spotify-owned playlists
+      const userPlaylists = playlists.filter(pl => pl.owner && pl.owner.id !== 'spotify')
+  
+      const detailedPlaylists = await Promise.all(
+        userPlaylists.map(pl =>
+          fetch(`https://api.spotify.com/v1/playlists/${pl.id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }).then(res => res.json())
+        )
+      )
+  
+      const sortedByFollowers = detailedPlaylists.sort(
+        (a, b) => (b.followers?.total || 0) - (a.followers?.total || 0)
+      )
+  
+      setSelectedCountry(`${name}, ${country}`)
+      setSelectedISO2(null) // Optional: reset country code since this is city-level
+      setPlaylist(sortedByFollowers[0])
+    } catch (err) {
+      console.error(`Error fetching playlists for ${name}:`, err)
+      setPlaylist(null)
+    }
+  }
+
+
+  
   return (
     <div className="app-container relative min-h-screen bg-[#242424] text-white font-sans px-4">
       <h1 className="text-4xl font-bold text-center pt-8">🌍 Spotify Globe Recommender 🎵</h1>
@@ -149,7 +195,8 @@ function App() {
             <PlaylistPanel country={selectedCountry} countryCode={selectedISO2} playlist={playlist} />
           )}
             <div className="flex-1">
-              <GlobeView onCountrySelect={handleCountryClick} />
+              {/* <GlobeView onCountrySelect={handleCountryClick} /> */}
+              <CityGlobeView onCitySelect={handleCityClick} />
             </div>
           </div>
         </div>
