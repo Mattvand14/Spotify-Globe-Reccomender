@@ -20,12 +20,5 @@ A global music recommendation web app that uses the Spotify API to recommend tra
 - **Frontend**: React, Three.js, Globe.gl, Tailwind CSS
 - **API**: Spotify Web API
 - **Tools**: Axios, Query-string
-
+- **Backend**: Node, Vercel
 ---
-
-## 🛠️ Getting Started
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/Mattvand14/spotify-globe-recommender.git
-cd spotify-globe-recommender
