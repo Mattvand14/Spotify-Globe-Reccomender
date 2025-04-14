@@ -13,7 +13,7 @@ function App() {
   const [selectedISO2, setSelectedISO2] = useState(null)
   const [playlist, setPlaylist] = useState(null)
 
-  const CLIENT_ID = SPOTIFY_API_KEY
+  const CLIENT_ID = import.meta.env.SPOTIFY_API_KEY
   const REDIRECT_URI = 'http://localhost:5173'
   const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize'
   const RESPONSE_TYPE = 'token'
