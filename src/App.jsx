@@ -3,6 +3,7 @@ import GlobeView from './components/GlobeView'
 import PlaylistPanel from './components/PlaylistPanel'
 import { iso3to2 } from './utils/countryCodeMap'
 import CityGlobeView from './components/CityGlobeView'
+import AudioFeaturesDropdown from './components/AudioFeaturesDropdown'
 import './App.css'
 import NavBar from './components/NavBar';
 
@@ -190,6 +191,14 @@ function App() {
     }
   }
 
+
+  const handleFeatureSelect = (feature) => {
+    setAudioFeature(feature);
+    // Here you might call a function to update or create a playlist
+    // based on both selectedCountry and the selected feature.
+    // e.g., fetchPlaylist(selectedCountry, feature);
+  };
+
   return (
     <div className="app-container min-h-screen bg-[#242424] text-white font-sans">
       {/* NavBar is fixed at the top */}
@@ -241,6 +250,12 @@ function App() {
                   </div>
                 </div>
               </div>
+
+              <div className='col-span-2 float-right'>
+                <AudioFeaturesDropdown onFeatureSelect={handleFeatureSelect}/>
+              </div>
+
+
             </div>
           </div>
         )}
